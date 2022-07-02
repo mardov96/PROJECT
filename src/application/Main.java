@@ -50,6 +50,7 @@ public class Main extends Application {
     int qos = 2;
     String broker = "tcp://localhost:1883";
     String clientId = "user1";
+    Met_images metimagen = new Met_images();
     MemoryPersistence persistence = new MemoryPersistence();
     
     
@@ -189,15 +190,9 @@ public class Main extends Application {
 				
 				for(int i = 0; i < 10; i++) {
 					Image foto = new Image("file:anime.jpg");
-					ImageView foto_user = new ImageView(foto);
 					
+					//metimagen.circuloimage(foto);
 					
-					
-					foto_user.setFitWidth(60);
-					foto_user.setFitHeight(60);
-					foto_user.setPreserveRatio(true);
-					foto_user.setSmooth(true);
-					foto_user.setStyle("-fx-image-radius: 20px;");
 					
 					GridPane usuarios = new GridPane();
 					Label usuarioId = new Label("Usuario "+(i+1));
@@ -211,7 +206,7 @@ public class Main extends Application {
 					usuarios.setVgap(10);
 					usuarios.setHgap(10);
 					
-					FlowPane contUser = new FlowPane(foto_user, usuarios);
+					FlowPane contUser = new FlowPane(metimagen.circuloimage(foto), usuarios);
 					contUser.setHgap(15);
 					contUser.setPadding(new Insets(10, 0, 0, 10));
 					
@@ -232,13 +227,7 @@ public class Main extends Application {
 				
 				for(int i = 0; i < 10; i++) {
 					Image foto = new Image("file:anime.jpg");
-					ImageView foto_user = new ImageView(foto);
 					
-					foto_user.setFitWidth(60);
-					foto_user.setFitHeight(60);
-					foto_user.setPreserveRatio(true);
-					foto_user.setSmooth(true);
-					foto_user.setStyle("-fx-image-radius: 20px;");
 					
 					HBox mensajes = new HBox(20);
 					
@@ -248,7 +237,7 @@ public class Main extends Application {
 					lb.setMaxWidth(200);
 					lb.setStyle("-fx-background-color: rgb(179,231,244); -fx-background-radius: 8px;");
 					lb.setPadding(new Insets(6));
-					mensajes.getChildren().addAll(foto_user, lb);
+					mensajes.getChildren().addAll(metimagen.circuloimage(foto), lb);
 					
 					mensajes.setPrefWidth(555);
 					mensajes.setPadding(new Insets(10, 0, 10, 10));
@@ -278,12 +267,6 @@ public class Main extends Application {
 					    	
 					    	
 					    	Image foto = new Image("file:anime.jpg");
-							ImageView foto_user = new ImageView(foto);
-							foto_user.setFitWidth(60);
-							foto_user.setFitHeight(60);
-							foto_user.setPreserveRatio(true);
-							foto_user.setSmooth(true);
-							foto_user.setStyle("-fx-image-radius: 20px;");
 							
 							HBox mensajes = new HBox(20);
 							
@@ -294,7 +277,7 @@ public class Main extends Application {
 							lb.setMaxWidth(200);
 							lb.setStyle("-fx-background-color: rgb(179,231,244); -fx-background-radius: 8px;");
 							lb.setPadding(new Insets(6));
-							mensajes.getChildren().addAll(lb, foto_user);
+							mensajes.getChildren().addAll(lb, metimagen.circuloimage(foto));
 							mensajes.setPrefWidth(555);
 							mensajes.setAlignment(Pos.TOP_RIGHT);
 							mensajes.setPadding(new Insets(10, 10, 10, 10));
@@ -316,12 +299,6 @@ public class Main extends Application {
 						
 						
 						Image foto = new Image("file:anime.jpg");
-						ImageView foto_user = new ImageView(foto);
-						foto_user.setFitWidth(60);
-						foto_user.setFitHeight(60);
-						foto_user.setPreserveRatio(true);
-						foto_user.setSmooth(true);
-						foto_user.setStyle("-fx-image-radius: 20px;");
 						
 						HBox mensajes = new HBox(20);
 						
@@ -332,7 +309,7 @@ public class Main extends Application {
 						lb.setMaxWidth(200);
 						lb.setStyle("-fx-background-color: rgb(179,231,244); -fx-background-radius: 8px;");
 						lb.setPadding(new Insets(6));
-						mensajes.getChildren().addAll(lb, foto_user);
+						mensajes.getChildren().addAll(lb, metimagen.circuloimage(foto));
 						mensajes.setPrefWidth(555);
 						mensajes.setAlignment(Pos.TOP_RIGHT);
 						mensajes.setPadding(new Insets(10, 10, 10, 10));
