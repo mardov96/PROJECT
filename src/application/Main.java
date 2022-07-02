@@ -1,7 +1,16 @@
 package application;
 	
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,9 +21,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 //import javafx.scene.image.Image;
 //import javafx.scene.image.ImageView;
 //import javafx.scene.input.MouseEvent;
@@ -23,21 +35,37 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 
 public class Main extends Application {
-	
+	String subTopic;
+	String pubTopic = "testtopic/1";
+    String content = "Hello World";
+    int qos = 2;
+    String broker = "tcp://localhost:1883";
+    String clientId = "user1";
+    MemoryPersistence persistence = new MemoryPersistence();
+    
+    
 	@Override
 	public void start(Stage escenario) throws Exception {
+		
+        
 		
 		TextField user = new TextField();
 		PasswordField clave = new PasswordField();
 		Button login = new Button("Iniciar sesiÃ³n");
 		Label titulo = new Label("");
 		
+		
+		
+	    // estableciendo formato del login
 		user.setFont(Font.font("Comic Sans Ms", FontWeight.LIGHT, 14));
 		user.setPromptText("Usuario");
 		user.setFocusTraversable(false);
@@ -54,10 +82,96 @@ public class Main extends Application {
 		titulo.setFont(Font.font("Comic Sans Ms", FontWeight.EXTRA_BOLD, 18));
 		titulo.setStyle("-fx-text-fill: blue");
 		
+		
+		//boton login
+		
 		login.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent event) {
+				
+				// implementando mqtt
+				
+				subTopic = user.getText();
+				
+				try {
+		        	 MqttClient client = new MqttClient(broker, clientId, persistence);
+
+		            // MQTT connection option
+		            MqttConnectOptions connOpts = new MqttConnectOptions();
+		            //connOpts.setUserName("emqx_test");
+		            //connOpts.setPassword("emqx_test_password".toCharArray());
+		            // retain session
+		            connOpts.setCleanSession(true);
+
+		            // set callback
+		            //client.setCallback(new OnMessageCallback());
+		            
+
+		            // establish a connection
+		            System.out.println("Connecting to broker: " + broker);
+		            client.connect(connOpts);
+
+		            System.out.println("Connected");
+		            //System.out.println("Publishing message: " + content.toString());
+		            
+		            client.setCallback(new MqttCallback() {
+						
+						@Override
+						public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
+							String mensaje = arg1.toString();
+							System.out.println(mensaje);
+							//txtF2.setText(mensaje);
+							
+						}
+						
+						@Override
+						public void deliveryComplete(IMqttDeliveryToken arg0) {
+							System.out.println("deliveryComplete---------" + arg0.isComplete());
+							
+						}
+						
+						@Override
+						public void connectionLost(Throwable arg0) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+		            
+		            
+		            
+		            
+		            
+
+		            // Subscribe
+		            client.subscribe(subTopic);
+
+		            // Required parameters for message publishing
+		            //MqttMessage message = new MqttMessage(content.getBytes());
+		            //message.setQos(qos);
+		            //client.publish(pubTopic, message);
+		            //System.out.println("Message published"); 
+		           
+		        }
+				catch (MqttException me) {
+		        	System.out.println ("x" + me.getReasonCode());
+		        	System.out.println("msg " + me.getMessage());
+		        	System.out.println("loc " + me.getLocalizedMessage());
+		        	System.out.println("cause " + me.getCause());
+		        	System.out.println("cause " + me.getCause());
+		        	System.out.println("excep " + me);
+		        	
+		            System.out.println("reason " + me.getReasonCode());
+		            System.out.println("msg " + me.getMessage());
+		            System.out.println("loc " + me.getLocalizedMessage());
+		            System.out.println("cause " + me.getCause());
+		            System.out.println("excep " + me);
+		            me.printStackTrace();
+		        }
+
+				
+				
+				
 				escenario.close();
 				TextField chat = new TextField();
 				Button enviar = new Button("Enviar");
@@ -76,6 +190,9 @@ public class Main extends Application {
 				for(int i = 0; i < 10; i++) {
 					Image foto = new Image("file:anime.jpg");
 					ImageView foto_user = new ImageView(foto);
+					
+					
+					
 					foto_user.setFitWidth(60);
 					foto_user.setFitHeight(60);
 					foto_user.setPreserveRatio(true);
@@ -111,9 +228,12 @@ public class Main extends Application {
 				
 				FlowPane contenido = new FlowPane();
 				
+				// mensaje repetido
+				
 				for(int i = 0; i < 10; i++) {
 					Image foto = new Image("file:anime.jpg");
 					ImageView foto_user = new ImageView(foto);
+					
 					foto_user.setFitWidth(60);
 					foto_user.setFitHeight(60);
 					foto_user.setPreserveRatio(true);
@@ -129,10 +249,16 @@ public class Main extends Application {
 					lb.setStyle("-fx-background-color: rgb(179,231,244); -fx-background-radius: 8px;");
 					lb.setPadding(new Insets(6));
 					mensajes.getChildren().addAll(foto_user, lb);
+					
 					mensajes.setPrefWidth(555);
 					mensajes.setPadding(new Insets(10, 0, 10, 10));
-					contenido.getChildren().add(mensajes);	
+					contenido.getChildren().add(mensajes);
+					
+					
 				}
+				
+				
+				
 				
 				ScrollPane panelder = new ScrollPane();
 				panelder.setContent(contenido);
@@ -141,11 +267,54 @@ public class Main extends Application {
 				panelder.setPrefWidth(570);
 				panelder.setPannable(true);
 				
+				
+				
+				// método que al dar enter se envíe el mensaje
+				chat.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+					@Override
+					public void handle(KeyEvent Event) {
+						if (Event.getCode() == KeyCode.ENTER)  {
+					    	
+					    	
+					    	Image foto = new Image("file:anime.jpg");
+							ImageView foto_user = new ImageView(foto);
+							foto_user.setFitWidth(60);
+							foto_user.setFitHeight(60);
+							foto_user.setPreserveRatio(true);
+							foto_user.setSmooth(true);
+							foto_user.setStyle("-fx-image-radius: 20px;");
+							
+							HBox mensajes = new HBox(20);
+							
+							Label lb = new Label();
+							lb.setText(chat.getText());// se setea y envia msg
+							lb.setTextAlignment(TextAlignment.LEFT);
+							lb.setWrapText(true);
+							lb.setMaxWidth(200);
+							lb.setStyle("-fx-background-color: rgb(179,231,244); -fx-background-radius: 8px;");
+							lb.setPadding(new Insets(6));
+							mensajes.getChildren().addAll(lb, foto_user);
+							mensajes.setPrefWidth(555);
+							mensajes.setAlignment(Pos.TOP_RIGHT);
+							mensajes.setPadding(new Insets(10, 10, 10, 10));
+							contenido.getChildren().add(mensajes);
+							panelder.vvalueProperty().bind(mensajes.heightProperty());
+							chat.clear();
+							
+					        }
+						
+					}
+				});
+				/// boton enviar
+				
 				enviar.setOnAction(new EventHandler<ActionEvent>() {
 					
 					@Override
 					public void handle(ActionEvent event) {
-
+						
+						
+						
 						Image foto = new Image("file:anime.jpg");
 						ImageView foto_user = new ImageView(foto);
 						foto_user.setFitWidth(60);
@@ -173,7 +342,11 @@ public class Main extends Application {
 						
 						
 					}
-				});
+				}); // aquí termina la acción del boton login
+				
+				
+				
+				
 				
 				HBox chatbox = new HBox(10);
 				chatbox.getChildren().addAll(chat, enviar);
@@ -220,6 +393,8 @@ public class Main extends Application {
 		AnchorPane.setTopAnchor(izq, 45d);
 		AnchorPane.setRightAnchor(der, 50d);
 		AnchorPane.setTopAnchor(der, 20d);
+		
+		
 		
 		Scene escena = new Scene(raiz, 420, 230);
 		//escenario.getIcons().add(new Image(""));
