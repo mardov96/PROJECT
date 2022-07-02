@@ -9,6 +9,9 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -138,11 +141,7 @@ public class Main extends Application {
 							
 						}
 					});
-		            
-		            
-		            
-		            
-		            
+
 
 		            // Subscribe
 		            client.subscribe(subTopic);
@@ -258,14 +257,13 @@ public class Main extends Application {
 				
 				
 				
-				// método que al dar enter se envíe el mensaje
+				// mï¿½todo que al dar enter se envï¿½e el mensaje
 				chat.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 					@Override
 					public void handle(KeyEvent Event) {
 						if (Event.getCode() == KeyCode.ENTER)  {
-					    	
-					    	
+
 					    	Image foto = new Image("file:anime.jpg");
 							
 							HBox mensajes = new HBox(20);
@@ -282,7 +280,35 @@ public class Main extends Application {
 							mensajes.setAlignment(Pos.TOP_RIGHT);
 							mensajes.setPadding(new Insets(10, 10, 10, 10));
 							contenido.getChildren().add(mensajes);
-							panelder.vvalueProperty().bind(mensajes.heightProperty());
+							panelder.vvalueProperty().bind(new ObservableValue<Number>() {
+
+								@Override
+								public void addListener(InvalidationListener arg0) {
+									panelder.vvalueProperty().bind(contenido.heightProperty());
+								}
+
+								@Override
+								public void removeListener(InvalidationListener arg0) {
+		
+								}
+
+								@Override
+								public void addListener(ChangeListener<? super Number> arg0) {
+									
+								}
+
+								@Override
+								public Number getValue() {
+									return 2;
+								}
+
+								@Override
+								public void removeListener(ChangeListener<? super Number> arg0) {
+
+								}
+								
+							});
+							
 							chat.clear();
 							
 					        }
@@ -295,9 +321,6 @@ public class Main extends Application {
 					
 					@Override
 					public void handle(ActionEvent event) {
-						
-						
-						
 						Image foto = new Image("file:anime.jpg");
 						
 						HBox mensajes = new HBox(20);
@@ -319,7 +342,7 @@ public class Main extends Application {
 						
 						
 					}
-				}); // aquí termina la acción del boton login
+				}); // aquï¿½ termina la acciï¿½n del boton login
 				
 				
 				
@@ -406,3 +429,10 @@ clave.setOnMousePressed(new EventHandler<MouseEvent>() {
 		}					
 	}	
 });*/
+
+//Imagen circular
+/*Image foto = new Image("file:anime.jpg");
+Circle user_foto = new Circle(30);
+user_foto.setStroke(Color.TRANSPARENT);
+user_foto.setFill(new ImagePattern(foto));			        
+user_foto.setSmooth(true);*/
